@@ -1,0 +1,86 @@
+>>>malloy
+import "movies.malloy"
+>>>markdown
+# 🎬 Global Cinema: What 75 Years of Movies Can Tell Us
+
+**Dataset:** Global Movies 1950–2026 | **Rows:** ~85,000+ films | **Tool:** Malloy + DuckDB
+
+---
+
+I've always been fascinated by movies — not just as entertainment, but as a mirror of culture and economics. When I found a dataset spanning 75 years of global cinema, one question immediately came to mind:
+
+\> *"Has Hollywood always dominated global cinema, or have other countries been quietly catching up?"*
+
+That one question led me down a rabbit hole I didn't expect.
+
+---
+
+## 🔎 Chapter 1: How Much Has Movie Production Changed?
+
+My first instinct was to just look at how many movies get made each year. I expected steady growth. What I found was an explosion.
+>>>malloy
+run: movies -> by_decade
+>>>markdown
+**What I found:** Movie production didn't grow steadily — it *accelerated* dramatically starting in the 2000s. The number of films made in the 2010s dwarfs every prior decade combined. This made me realize: the streaming era didn't just change *how* we watch movies, it changed *how many get made.*
+
+But more movies doesn't mean better movies. Which led me to ask...
+
+---
+
+## 🌍 Chapter 2: Does Hollywood Actually Make the Best Films?
+
+I assumed the U.S. would dominate both in volume and quality. The volume part was true. The quality part — not so much.
+>>>malloy
+run: movies -> by_country
+>>>markdown
+**The surprise:** When I filtered for countries with at least 20 films and ranked by average rating, the United States didn't top the list. Several smaller film industries — particularly from South Korea, Japan, and parts of Europe — consistently outperformed Hollywood on ratings despite making far fewer films.
+
+This was genuinely shocking. It reframed my whole question. Maybe the real story isn't about *who makes the most movies*, but *who makes movies that audiences actually love.*
+
+---
+
+## 🎭 Chapter 3: Which Genres Have Stood the Test of Time?
+
+I wanted to know whether certain genres consistently earn higher ratings, or whether it's all luck.
+>>>malloy
+run: movies -> top_genres_by_rating
+>>>markdown
+**What I found:** Documentary and Drama consistently earn higher average ratings than Action or Horror. But here's the twist — Action and Horror are among the most *profitable* genres. There's a clear disconnect between what audiences *rate highly* and what studios *make money from.*
+
+This led me straight to the financial question.
+
+---
+
+## 💰 Chapter 4: Does Spending More Money Actually Work?
+
+The conventional wisdom is "bigger budget = bigger box office." But is that actually true across all eras?
+>>>malloy
+run: movies -> budget_vs_revenue
+>>>markdown
+**The finding:** The relationship between budget and revenue has *changed over time.* In the Classic and New Hollywood eras, high-budget films reliably returned strong profits. But in the Streaming Era (2010s onward), the average profit margin has tightened significantly — suggesting that as more films compete for attention, the blockbuster strategy has become riskier.
+
+---
+
+## ⏱️ Chapter 5: Are Movies Getting Longer?
+
+One last curiosity — I've always felt like movies have gotten longer. The data confirmed it, but with an interesting wrinkle.
+>>>malloy
+run: movies -> runtime_trends
+>>>markdown
+**The pattern:** Average runtime grew steadily from the 1950s through the 2000s, peaking in the 2000s–2010s. But in the 2020s, there's a slight dip — possibly driven by the rise of streaming-native content optimized for shorter attention spans.
+
+---
+
+## 🧩 Putting It All Together
+
+What started as a simple question about Hollywood dominance turned into a much richer story:
+
+1. **Volume ≠ Quality** — The U.S. makes the most films but not the highest-rated ones
+2. **Ratings ≠ Profit** — Documentaries score highest; Action films earn most
+3. **Bigger budgets are riskier now** than they were in the classic Hollywood era
+4. **Runtime peaked** in the 2000s and may now be reversing
+
+The global movie industry is more competitive, more diverse, and more financially complex than the Hollywood-centric narrative suggests.
+>>>malloy
+// Full genre breakdown by decade — the complete picture
+run: movies -> genre_by_decade

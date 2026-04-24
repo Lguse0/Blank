@@ -1,0 +1,193 @@
+// ============================================================
+// Global Movies Dataset 1950–2026
+// Source: Kaggle - suhanigupta04/global-movies-dataset-19502026
+// ============================================================
+
+source: movies is duckdb.table('global_movies.csv') extend {
+
+  // ── Measures ─────────────────────────────────────────────
+
+  measure: movie_count       is count()
+  measure: avg_rating        is imdb_rating.avg()
+  measure: avg_runtime       is runtime_min.avg()
+  measure: avg_budget        is budget_million.avg()
+  measure: avg_revenue       is revenue_million.avg()
+  measure: total_revenue     is revenue_million.sum()
+  measure: avg_roi           is roi_pct.avg()
+  measure: avg_metascore     is metascore.avg()
+  measure: avg_audience      is audience_score.avg()
+  measure: avg_popularity    is popularity_score.avg()
+  measure: total_nominations is award_nominations.sum()
+  measure: total_wins        is award_wins.sum()
+  measure: blockbuster_count is count() { where: blockbuster_flag = 1 }
+  measure: franchise_count   is count() { where: franchise_flag = 1 }
+  measure: high_rated_count  is count() { where: imdb_rating >= 7.5 }
+  measure: pct_high_rated    is high_rated_count / movie_count * 100
+
+  // ── Views ────────────────────────────────────────────────
+
+  // Q1: How has movie production and ratings changed by decade?
+  view: by_decade is {
+    group_by: decade
+    aggregate:
+      movie_count
+      avg_rating
+      avg_runtime
+      avg_roi
+    order_by: decade
+  }
+
+  // Q2: Which countries produce the most films and highest rated?
+  view: by_country is {
+    group_by: country
+    aggregate:
+      movie_count
+      avg_rating
+      total_revenue
+      avg_roi
+    order_by: movie_count desc
+    limit: 20
+  }
+
+  // Q3: Which genres earn the highest IMDb ratings?
+  view: top_genres_by_rating is {
+    group_by: genre
+    aggregate:
+      avg_rating
+      avg_metascore
+      avg_audience
+      movie_count
+      pct_high_rated
+    order_by: avg_rating desc
+  }
+
+  // Q4: Which genres generate the most revenue and ROI?
+  view: top_genres_by_revenue is {
+    group_by: genre
+    aggregate:
+      total_revenue
+      avg_budget
+      avg_revenue
+      avg_roi
+      movie_count
+    order_by: avg_roi desc
+  }
+
+  // Q5: Are movies getting longer or shorter over time?
+  view: runtime_by_decade is {
+    group_by: decade
+    aggregate:
+      avg_runtime
+      movie_count
+    order_by: decade
+  }
+
+  // Q6: Which directors have the best average ratings?
+  view: top_directors is {
+    group_by: director
+    aggregate:
+      movie_count
+      avg_rating
+      total_revenue
+      avg_roi
+    order_by: avg_rating desc
+    limit: 25
+  }
+
+  // Q7: Which streaming platforms host the best rated content?
+  view: by_platform is {
+    group_by: streaming_platform
+    aggregate:
+      movie_count
+      avg_rating
+      avg_audience
+      total_revenue
+    order_by: avg_rating desc
+  }
+
+  // Q8: Do franchise films outperform original films?
+  view: franchise_vs_original is {
+    group_by: franchise_flag
+    aggregate:
+      movie_count
+      avg_rating
+      avg_revenue
+      avg_roi
+      avg_popularity
+      blockbuster_count
+    order_by: franchise_flag desc
+  }
+
+  // Q9: Which languages appear most and how do they rate?
+  view: by_language is {
+    group_by: language
+    aggregate:
+      movie_count
+      avg_rating
+      total_revenue
+    order_by: movie_count desc
+    limit: 20
+  }
+
+  // Q10: Awards analysis by genre
+  view: awards_by_genre is {
+    group_by: genre
+    aggregate:
+      total_nominations
+      total_wins
+      movie_count
+      avg_rating
+    order_by: total_wins desc
+  }
+
+  // Q11: Top rated movies overall
+  view: top_rated_movies is {
+    group_by:
+      title
+      release_year
+      genre
+      country
+      imdb_rating
+      metascore
+      director
+    order_by: imdb_rating desc
+    limit: 25
+  }
+
+  // Q12: Blockbuster analysis by decade
+  view: blockbusters_by_decade is {
+    group_by: decade
+    aggregate:
+      blockbuster_count
+      movie_count
+      avg_revenue
+      avg_roi
+    order_by: decade
+  }
+}
+
+// ── Run Queries ──────────────────────────────────────────────
+
+run: movies -> by_decade
+
+run: movies -> by_country
+
+run: movies -> top_genres_by_rating
+
+run: movies -> top_genres_by_revenue
+
+run: movies -> runtime_by_decade
+
+run: movies -> top_directors
+
+run: movies -> by_platform
+
+run: movies -> franchise_vs_original
+
+run: movies -> by_language
+
+run: movies -> awards_by_genre
+
+run: movies -> top_rated_movies
+
+run: movies -> blockbusters_by_decade
